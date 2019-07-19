@@ -34,6 +34,7 @@ public class Processor {
     private final String KEY = "3fa6f09b";
 
     private final int GROUP_COUNT = 10000;
+    private final int OVERTIME = 3300 * 1000;
 
     @Resource
     TransferDataService transferDataService;
@@ -44,6 +45,8 @@ public class Processor {
     @Scheduled(fixedDelay=1000000)
     private void process() {
         int sCount = 0, fCount = 0;
+        long startTime = System.currentTimeMillis();
+
         File folder = new File(FOLDER_PATH);
         if (!folder.exists()) {
             folder.mkdirs();
@@ -97,7 +100,7 @@ public class Processor {
                         records.append("[");
                     }
 
-                    if (didReadEnd) {
+                    if (didReadEnd || System.currentTimeMillis() - startTime >= OVERTIME) {
                         break;
                     }
                 }
