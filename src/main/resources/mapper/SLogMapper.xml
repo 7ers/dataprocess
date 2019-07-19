@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hsmy.dataprocess.dao.SLogMapper" >
+  <resultMap id="BaseResultMap" type="com.hsmy.dataprocess.pojo.SLog" >
+    <id column="ID" property="id" jdbcType="INTEGER" />
+    <result column="TOTAL" property="total" jdbcType="INTEGER" />
+    <result column="SENDTIME" property="sendtime" jdbcType="DATE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, TOTAL, SENDTIME
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_SEND_LOG
+    where ID = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from T_SEND_LOG
+    where ID = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.hsmy.dataprocess.pojo.SLog" >
+    insert into T_SEND_LOG (ID, TOTAL, SENDTIME
+      )
+    values (#{id,jdbcType=INTEGER}, #{total,jdbcType=INTEGER}, #{sendtime,jdbcType=DATE}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.hsmy.dataprocess.pojo.SLog" >
+    insert into T_SEND_LOG
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        ID,
+      </if>
+      <if test="total != null" >
+        TOTAL,
+      </if>
+      <if test="sendtime != null" >
+        SENDTIME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="total != null" >
+        #{total,jdbcType=INTEGER},
+      </if>
+      <if test="sendtime != null" >
+        #{sendtime,jdbcType=DATE},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hsmy.dataprocess.pojo.SLog" >
+    update T_SEND_LOG
+    <set >
+      <if test="total != null" >
+        TOTAL = #{total,jdbcType=INTEGER},
+      </if>
+      <if test="sendtime != null" >
+        SENDTIME = #{sendtime,jdbcType=DATE},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hsmy.dataprocess.pojo.SLog" >
+    update T_SEND_LOG
+    set TOTAL = #{total,jdbcType=INTEGER},
+      SENDTIME = #{sendtime,jdbcType=DATE}
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

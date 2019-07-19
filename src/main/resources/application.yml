@@ -1,0 +1,12 @@
+server:
+  port: 18080
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://47.93.30.9:3306/DEVICE?useUnicode=true&characterEncoding=UTF-8&useSSL=false
+    username: spider
+    password: Spider#3340
+
+mybatis:
+  mapper-locations: classpath:mapping/*Mapper.xml
+  type-aliases-package: com.hsmy.dataprocess.pojo

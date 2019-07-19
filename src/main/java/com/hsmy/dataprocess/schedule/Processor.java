@@ -32,15 +32,17 @@ import java.util.List;
 public class Processor {
     private final String URL = "http://www.798joy.com:1080/recv";
 
-    private final String folderPath = "/Users/lahm/Desktop/data/";
-    private final String historyPath = "/Users/lahm/Desktop/history/";
+    private final String FOLDER_PATH = "/Users/lahm/Desktop/data/";
+    private final String HISTORY_PATH = "/Users/lahm/Desktop/history/";
 
     private final String FORMAT = "{\"ip\":\"%s\",\"ua\":\"%s\"},";
     private final String KEY = "3fa6f09b";
 
-    @Scheduled(fixedDelay=10000)
+    private final int GROUP_COUNT = 10000;
+
+    @Scheduled(fixedDelay=10000000)
     private void process() {
-        File folder = new File(folderPath);
+        File folder = new File(FOLDER_PATH);
         if (!folder.exists()) {
             folder.mkdirs();
         } else {
@@ -59,7 +61,7 @@ public class Processor {
             String filename = fileList.get(fileList.size()-1).toString();
             BufferedRandomAccessFile reader = null;
             try {
-                reader = new BufferedRandomAccessFile(folderPath + filename, "r");
+                reader = new BufferedRandomAccessFile(FOLDER_PATH + filename, "r");
                 reader.seek(0);
                 int count = 0;
                 boolean didReadEnd = false;
@@ -76,12 +78,12 @@ public class Processor {
                         ++count;
                     }
 
-                    if(count == 10000 || (didReadEnd && records.length() > 0)){
+                    if(count == GROUP_COUNT || (didReadEnd && records.length() > 0)){
                         records.deleteCharAt(records.length() - 1);
                         records.append("]");
                         String sendContent = DesECBUti.encryptDES(records.toString(), KEY);
 
-                        String ret = sendPostDataByJson(URL, sendContent,"utf-8");
+//                        String ret = sendPostDataByJson(URL, sendContent,"utf-8");
 
                         count = 0;
                         records.setLength(0);
@@ -89,8 +91,9 @@ public class Processor {
                     }
 
                     if (didReadEnd) {
-                        File currentFile = new File(folderPath + filename);
-                        currentFile.renameTo(new File(historyPath + filename));
+//                        File currentFile = new File(FOLDER_PATH + filename);
+//                        currentFile.renameTo(new File(HISTORY_PATH + filename));
+
 
                         break;
                     }
