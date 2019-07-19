@@ -14,8 +14,6 @@ import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.io.File;
-import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -34,7 +32,7 @@ public class Processor {
     private final String KEY = "3fa6f09b";
 
     private final int GROUP_COUNT = 10000;
-    private final int OVERTIME = 3300 * 1000;
+    private final int TIMEOUT = 3300 * 1000;
 
     @Resource
     TransferDataService transferDataService;
@@ -69,13 +67,13 @@ public class Processor {
                 reader = new BufferedRandomAccessFile(FOLDER_PATH + filename, "r");
                 reader.seek(0);
                 int count = 0;
-                boolean didReadEnd = false;
+                boolean didReadEOF = false;
                 StringBuilder records = new StringBuilder();
                 records.append("[");
                 while (true) {
                     String line = reader.readLine();
                     if (StringUtils.isEmpty(line)) {
-                        didReadEnd = true;
+                        didReadEOF = true;
                     } else {
                         String[] record = line.split("\\|");
                         records.append(String.format(FORMAT, record[0], record[2]));
@@ -83,7 +81,7 @@ public class Processor {
                         ++count;
                     }
 
-                    if(count == GROUP_COUNT || (didReadEnd && records.length() > 0)){
+                    if(count == GROUP_COUNT || (didReadEOF && records.length() > 0)){
                         records.deleteCharAt(records.length() - 1);
                         records.append("]");
                         String sendContent = DesECBUti.encryptDES(records.toString(), KEY);
@@ -100,7 +98,7 @@ public class Processor {
                         records.append("[");
                     }
 
-                    if (didReadEnd || System.currentTimeMillis() - startTime >= OVERTIME) {
+                    if (didReadEOF || System.currentTimeMillis() - startTime >= TIMEOUT) {
                         break;
                     }
                 }
