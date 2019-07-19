@@ -2,10 +2,12 @@ package com.hsmy.dataprocess.pojo;
 
 import java.util.Date;
 
-public class SLog {
+public class SendLog {
     private Integer id;
 
-    private Integer total;
+    private Integer scount;
+
+    private Integer fcount;
 
     private Date sendtime;
 
@@ -17,12 +19,20 @@ public class SLog {
         this.id = id;
     }
 
-    public Integer getTotal() {
-        return total;
+    public Integer getScount() {
+        return scount;
     }
 
-    public void setTotal(Integer total) {
-        this.total = total;
+    public void setScount(Integer scount) {
+        this.scount = scount;
+    }
+
+    public Integer getFcount() {
+        return fcount;
+    }
+
+    public void setFcount(Integer fcount) {
+        this.fcount = fcount;
     }
 
     public Date getSendtime() {

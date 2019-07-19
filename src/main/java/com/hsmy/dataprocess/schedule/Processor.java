@@ -1,16 +1,10 @@
 package com.hsmy.dataprocess.schedule;
 
+import com.hsmy.dataprocess.service.SendLogService;
+import com.hsmy.dataprocess.service.TransferDataService;
 import com.hsmy.dataprocess.tools.BufferedRandomAccessFile;
 import com.hsmy.dataprocess.tools.DesECBUti;
 import org.apache.http.HttpStatus;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -18,6 +12,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -40,8 +35,15 @@ public class Processor {
 
     private final int GROUP_COUNT = 10000;
 
-    @Scheduled(fixedDelay=10000000)
+    @Resource
+    TransferDataService transferDataService;
+
+    @Resource
+    SendLogService sendLogService;
+
+    @Scheduled(fixedDelay=1000000)
     private void process() {
+        int sCount = 0, fCount = 0;
         File folder = new File(FOLDER_PATH);
         if (!folder.exists()) {
             folder.mkdirs();
@@ -83,7 +85,12 @@ public class Processor {
                         records.append("]");
                         String sendContent = DesECBUti.encryptDES(records.toString(), KEY);
 
-//                        String ret = sendPostDataByJson(URL, sendContent,"utf-8");
+                        int ret = transferDataService.sendPostDataByJson(URL, sendContent,"utf-8");
+                        if (ret == HttpStatus.SC_OK) {
+                            sCount += count;
+                        } else {
+                            fCount += count;
+                        }
 
                         count = 0;
                         records.setLength(0);
@@ -91,10 +98,6 @@ public class Processor {
                     }
 
                     if (didReadEnd) {
-//                        File currentFile = new File(FOLDER_PATH + filename);
-//                        currentFile.renameTo(new File(HISTORY_PATH + filename));
-
-
                         break;
                     }
                 }
@@ -102,37 +105,12 @@ public class Processor {
                 e.printStackTrace();
             } finally {
                 IOUtils.closeQuietly(reader);
+
+                File currentFile = new File(FOLDER_PATH + filename);
+                currentFile.renameTo(new File(HISTORY_PATH + filename));
+
+                sendLogService.record(sCount, fCount);
             }
         }
-    }
-
-    public String sendPostDataByJson(String url, String json, String encoding) throws ClientProtocolException, IOException {
-        String result = "";
-
-        CloseableHttpClient httpClient = HttpClients.createDefault();
-        HttpPost httpPost = new HttpPost(url);
-        StringEntity stringEntity = new StringEntity(json, ContentType.APPLICATION_JSON);
-        stringEntity.setContentEncoding("utf-8");
-        httpPost.setEntity(stringEntity);
-
-        CloseableHttpResponse response = null;
-        try{
-            response = httpClient.execute(httpPost);
-        }catch (ClientProtocolException cpe){
-            cpe.printStackTrace();
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-
-        int statusCode = HttpStatus.SC_REQUEST_TIMEOUT;
-        if (response != null) {
-            statusCode = response.getStatusLine().getStatusCode();
-            if (statusCode == HttpStatus.SC_OK) {
-                result = EntityUtils.toString(response.getEntity(), "utf-8");
-            }
-            response.close();
-        }
-
-        return String.valueOf(statusCode);
     }
 }
