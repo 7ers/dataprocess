@@ -21,12 +21,19 @@ import org.springframework.util.StringUtils;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 @Component
 @Configuration
 @EnableScheduling
 public class Processor {
-    private String folderPath = "/Users/lahm/Desktop/data/";
+    private final String URL = "http://www.798joy.com:1080/recv";
+
+    private final String folderPath = "/Users/lahm/Desktop/data/";
+    private final String historyPath = "/Users/lahm/Desktop/history/";
 
     private final String FORMAT = "{\"ip\":\"%s\",\"ua\":\"%s\"},";
     private final String KEY = "3fa6f09b";
@@ -37,49 +44,61 @@ public class Processor {
         if (!folder.exists()) {
             folder.mkdirs();
         } else {
-            String[] fileList = folder.list();
-            if (fileList != null && fileList.length > 0) {
-                String filePath = fileList[fileList.length-1];
-                BufferedRandomAccessFile reader = null;
-                try {
-                    reader = new BufferedRandomAccessFile(folderPath + filePath, "r");
-                    reader.seek(0);
-                    int count = 0;
-                    boolean didReadEnd = false;
-                    StringBuilder records = new StringBuilder();
-                    records.append("[");
-                    while (true) {
-                        String line = reader.readLine();
-                        if (StringUtils.isEmpty(line)) {
-                            didReadEnd = true;
-                        } else {
-                            String[] record = line.split("\\|");
-                            records.append(String.format(FORMAT, record[0], record[2]));
+            String[] fileArray = folder.list();
+            if (fileArray == null || fileArray.length == 0)
+                return;
 
-                            ++count;
-                        }
-
-                        if((count == 10000 || didReadEnd) && records.length() > 0){
-                            records.deleteCharAt(records.length() - 1);
-                            records.append("]");
-
-                            String sendContent = DesECBUti.encryptDES(records.toString(), KEY);
-                            String ret = sendPostDataByJson("http://www.798joy.com:1080/recv", sendContent,"utf-8");
-
-                            count = 0;
-                            records.setLength(0);
-                            records.append("[");
-                        }
-
-                        if (didReadEnd) {
-                            break;
-                        }
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                } finally {
-                    IOUtils.closeQuietly(reader);
+            List fileList = Arrays.asList(fileArray);
+            Collections.sort(fileList, new Comparator<String>() {
+                @Override
+                public int compare(String f1, String f2) {
+                    return f1.compareTo(f2);
                 }
+            });
+
+            String filename = fileList.get(fileList.size()-1).toString();
+            BufferedRandomAccessFile reader = null;
+            try {
+                reader = new BufferedRandomAccessFile(folderPath + filename, "r");
+                reader.seek(0);
+                int count = 0;
+                boolean didReadEnd = false;
+                StringBuilder records = new StringBuilder();
+                records.append("[");
+                while (true) {
+                    String line = reader.readLine();
+                    if (StringUtils.isEmpty(line)) {
+                        didReadEnd = true;
+                    } else {
+                        String[] record = line.split("\\|");
+                        records.append(String.format(FORMAT, record[0], record[2]));
+
+                        ++count;
+                    }
+
+                    if(count == 10000 || (didReadEnd && records.length() > 0)){
+                        records.deleteCharAt(records.length() - 1);
+                        records.append("]");
+                        String sendContent = DesECBUti.encryptDES(records.toString(), KEY);
+
+                        String ret = sendPostDataByJson(URL, sendContent,"utf-8");
+
+                        count = 0;
+                        records.setLength(0);
+                        records.append("[");
+                    }
+
+                    if (didReadEnd) {
+                        File currentFile = new File(folderPath + filename);
+                        currentFile.renameTo(new File(historyPath + filename));
+
+                        break;
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                IOUtils.closeQuietly(reader);
             }
         }
     }
