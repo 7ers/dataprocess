@@ -56,6 +56,7 @@ public class Processor {
     private void process() {
         long startTime = System.currentTimeMillis();
         int sCount = 0, fCount = 0;
+        int totalbyte = 0;
 
         File folder = new File(src_path);
         if (!folder.exists()) {
@@ -81,6 +82,7 @@ public class Processor {
 
                 reader = new BufferedRandomAccessFile(src_path + filename, "r");
                 reader.seek(0);
+                totalbyte = (int)reader.length();
 
                 int count = 0;
                 boolean didReadEOF = false;
@@ -130,7 +132,7 @@ public class Processor {
                 }
 
                 if(sCount > 0 || fCount > 0)
-                    sendLogService.record(sCount, fCount, filename);
+                    sendLogService.record(sCount, fCount, filename, (int)reader.getFilePointer(), totalbyte);
             }
         }
     }

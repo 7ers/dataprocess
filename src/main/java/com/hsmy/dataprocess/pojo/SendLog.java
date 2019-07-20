@@ -14,6 +14,10 @@ public class SendLog {
 
     private String filename;
 
+    private Integer readbyte;
+
+    private Integer totalbyte;
+
     @DateTimeFormat(pattern = "yyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyy-MM-dd HH:mm:ss")
     private Date sendtime;
@@ -52,6 +56,22 @@ public class SendLog {
 
     public void setFilename(String filename) {
         this.filename = filename == null ? null : filename.trim();
+    }
+
+    public Integer getReadbyte() {
+        return readbyte;
+    }
+
+    public void setReadbyte(Integer readbyte) {
+        this.readbyte = readbyte;
+    }
+
+    public Integer getTotalbyte() {
+        return totalbyte;
+    }
+
+    public void setTotalbyte(Integer totalbyte) {
+        this.totalbyte = totalbyte;
     }
 
     public Date getSendtime() {

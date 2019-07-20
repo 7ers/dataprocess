@@ -6,10 +6,12 @@
     <result column="SCOUNT" jdbcType="INTEGER" property="scount" />
     <result column="FCOUNT" jdbcType="INTEGER" property="fcount" />
     <result column="FILENAME" jdbcType="VARCHAR" property="filename" />
+    <result column="READBYTE" jdbcType="INTEGER" property="readbyte" />
+    <result column="TOTALBYTE" jdbcType="INTEGER" property="totalbyte" />
     <result column="SENDTIME" jdbcType="TIMESTAMP" property="sendtime" />
   </resultMap>
   <sql id="Base_Column_List">
-    ID, SCOUNT, FCOUNT, FILENAME, SENDTIME
+    ID, SCOUNT, FCOUNT, FILENAME, READBYTE, TOTALBYTE, SENDTIME
   </sql>
   <insert id="insertSelective" parameterType="com.hsmy.dataprocess.pojo.SendLog">
     insert into T_SEND_LOG
@@ -25,6 +27,12 @@
       </if>
       <if test="filename != null">
         FILENAME,
+      </if>
+      <if test="readbyte != null">
+        READBYTE,
+      </if>
+      <if test="totalbyte != null">
+        TOTALBYTE,
       </if>
       <if test="sendtime != null">
         SENDTIME,
@@ -42,6 +50,12 @@
       </if>
       <if test="filename != null">
         #{filename,jdbcType=VARCHAR},
+      </if>
+      <if test="readbyte != null">
+        #{readbyte,jdbcType=INTEGER},
+      </if>
+      <if test="totalbyte != null">
+        #{totalbyte,jdbcType=INTEGER},
       </if>
       <if test="sendtime != null">
         #{sendtime,jdbcType=TIMESTAMP},
