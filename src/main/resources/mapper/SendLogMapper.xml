@@ -1,85 +1,60 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.hsmy.dataprocess.dao.SendLogMapper" >
-  <resultMap id="BaseResultMap" type="com.hsmy.dataprocess.pojo.SendLog" >
-    <id column="ID" property="id" jdbcType="INTEGER" />
-    <result column="SCOUNT" property="scount" jdbcType="INTEGER" />
-    <result column="FCOUNT" property="fcount" jdbcType="INTEGER" />
-    <result column="SENDTIME" property="sendtime" jdbcType="TIMESTAMP" />
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hsmy.dataprocess.dao.SendLogMapper">
+  <resultMap id="BaseResultMap" type="com.hsmy.dataprocess.pojo.SendLog">
+    <id column="ID" jdbcType="INTEGER" property="id" />
+    <result column="SCOUNT" jdbcType="INTEGER" property="scount" />
+    <result column="FCOUNT" jdbcType="INTEGER" property="fcount" />
+    <result column="FILENAME" jdbcType="VARCHAR" property="filename" />
+    <result column="SENDTIME" jdbcType="TIMESTAMP" property="sendtime" />
   </resultMap>
-  <sql id="Base_Column_List" >
-    ID, SCOUNT, FCOUNT, SENDTIME
+  <sql id="Base_Column_List">
+    ID, SCOUNT, FCOUNT, FILENAME, SENDTIME
   </sql>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
-    select 
-    <include refid="Base_Column_List" />
-    from T_SEND_LOG
-    where ID = #{id,jdbcType=INTEGER}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
-    delete from T_SEND_LOG
-    where ID = #{id,jdbcType=INTEGER}
-  </delete>
-  <insert id="insert" parameterType="com.hsmy.dataprocess.pojo.SendLog" >
-    insert into T_SEND_LOG (ID, SCOUNT, FCOUNT, 
-      SENDTIME)
-    values (#{id,jdbcType=INTEGER}, #{scount,jdbcType=INTEGER}, #{fcount,jdbcType=INTEGER}, 
-      #{sendtime,jdbcType=TIMESTAMP})
-  </insert>
-  <insert id="insertSelective" parameterType="com.hsmy.dataprocess.pojo.SendLog" >
+  <insert id="insertSelective" parameterType="com.hsmy.dataprocess.pojo.SendLog">
     insert into T_SEND_LOG
-    <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
         ID,
       </if>
-      <if test="scount != null" >
+      <if test="scount != null">
         SCOUNT,
       </if>
-      <if test="fcount != null" >
+      <if test="fcount != null">
         FCOUNT,
       </if>
-      <if test="sendtime != null" >
+      <if test="filename != null">
+        FILENAME,
+      </if>
+      <if test="sendtime != null">
         SENDTIME,
       </if>
     </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
         #{id,jdbcType=INTEGER},
       </if>
-      <if test="scount != null" >
+      <if test="scount != null">
         #{scount,jdbcType=INTEGER},
       </if>
-      <if test="fcount != null" >
+      <if test="fcount != null">
         #{fcount,jdbcType=INTEGER},
       </if>
-      <if test="sendtime != null" >
+      <if test="filename != null">
+        #{filename,jdbcType=VARCHAR},
+      </if>
+      <if test="sendtime != null">
         #{sendtime,jdbcType=TIMESTAMP},
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.hsmy.dataprocess.pojo.SendLog" >
-    update T_SEND_LOG
-    <set >
-      <if test="scount != null" >
-        SCOUNT = #{scount,jdbcType=INTEGER},
-      </if>
-      <if test="fcount != null" >
-        FCOUNT = #{fcount,jdbcType=INTEGER},
-      </if>
-      <if test="sendtime != null" >
-        SENDTIME = #{sendtime,jdbcType=TIMESTAMP},
-      </if>
-    </set>
-    where ID = #{id,jdbcType=INTEGER}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.hsmy.dataprocess.pojo.SendLog" >
-    update T_SEND_LOG
-    set SCOUNT = #{scount,jdbcType=INTEGER},
-      FCOUNT = #{fcount,jdbcType=INTEGER},
-      SENDTIME = #{sendtime,jdbcType=TIMESTAMP}
-    where ID = #{id,jdbcType=INTEGER}
-  </update>
-  <select id="selectAll" resultMap="BaseResultMap">
+  <select id="selectByDay" resultMap="BaseResultMap">
     select DATE_FORMAT(SENDTIME,'%Y%m%d') sdate,sum(scount) scount,sum(fcount) fcount from T_SEND_LOG group by sdate order by sdate desc
+  </select>
+  <select id="selectByHour" resultMap="BaseResultMap">
+    select * from T_SEND_LOG order by SENDTIME
+  </select>
+  <select id="countByFileName" parameterType="java.lang.String" resultType="java.lang.Integer">
+    select count(1) from T_SEND_LOG where FILENAME = #{filename,jdbcType=VARCHAR}
   </select>
 </mapper>

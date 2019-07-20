@@ -1,23 +1,15 @@
 package com.hsmy.dataprocess.dao;
 
 import com.hsmy.dataprocess.pojo.SendLog;
-import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
-@Mapper
 public interface SendLogMapper {
-    int deleteByPrimaryKey(Integer id);
-
-    int insert(SendLog record);
-
     int insertSelective(SendLog record);
 
-    SendLog selectByPrimaryKey(Integer id);
+    List<SendLog> selectByDay();
 
-    int updateByPrimaryKeySelective(SendLog record);
+    List<SendLog> selectByHour();
 
-    int updateByPrimaryKey(SendLog record);
-
-    List<SendLog> selectAll();
+    int countByFileName(String filename);
 }

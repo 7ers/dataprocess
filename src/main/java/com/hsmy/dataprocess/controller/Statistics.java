@@ -13,11 +13,20 @@ public class Statistics {
     @Resource
     SendLogService sendLogService;
 
-    @GetMapping("/st")
-    public Object st() {
+    @GetMapping("/querybyday")
+    public Object querybyday() {
         Map<String, Object> result = new HashMap<>();
         result.put("code", "0");
-        result.put("data", sendLogService.selectAll());
+        result.put("data", sendLogService.selectByDay());
+
+        return result;
+    }
+
+    @GetMapping("/querybyhour")
+    public Object querybyhour() {
+        Map<String, Object> result = new HashMap<>();
+        result.put("code", "0");
+        result.put("data", sendLogService.selectByHour());
 
         return result;
     }

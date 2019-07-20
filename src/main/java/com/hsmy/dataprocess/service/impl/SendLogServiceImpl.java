@@ -14,15 +14,26 @@ public class SendLogServiceImpl implements SendLogService {
     private SendLogMapper sendLogMapper;
 
     @Override
-    public void record(int sCount, int fCount) {
+    public void record(int sCount, int fCount, String filename) {
         SendLog sendLog = new SendLog();
         sendLog.setScount(sCount);
         sendLog.setFcount(fCount);
+        sendLog.setFilename(filename);
         sendLogMapper.insertSelective(sendLog);
     }
 
     @Override
-    public List<SendLog> selectAll() {
-        return sendLogMapper.selectAll();
+    public boolean isDuplicate(String filename) {
+        return sendLogMapper.countByFileName(filename) > 0;
+    }
+
+    @Override
+    public List<SendLog> selectByDay() {
+        return sendLogMapper.selectByDay();
+    }
+
+    @Override
+    public List<SendLog> selectByHour() {
+        return sendLogMapper.selectByHour();
     }
 }

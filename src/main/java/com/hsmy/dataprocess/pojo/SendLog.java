@@ -12,6 +12,10 @@ public class SendLog {
 
     private Integer fcount;
 
+    private String filename;
+
+    @DateTimeFormat(pattern = "yyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyy-MM-dd HH:mm:ss")
     private Date sendtime;
 
     @DateTimeFormat(pattern = "yyyy")
@@ -40,6 +44,14 @@ public class SendLog {
 
     public void setFcount(Integer fcount) {
         this.fcount = fcount;
+    }
+
+    public String getFilename() {
+        return filename;
+    }
+
+    public void setFilename(String filename) {
+        this.filename = filename == null ? null : filename.trim();
     }
 
     public Date getSendtime() {

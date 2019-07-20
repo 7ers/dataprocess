@@ -5,6 +5,11 @@ import com.hsmy.dataprocess.pojo.SendLog;
 import java.util.List;
 
 public interface SendLogService {
-    public void record(int sCount, int fCount);
-    public List<SendLog> selectAll();
+    void record(int sCount, int fCount, String filename);
+
+    boolean isDuplicate(String filename);
+
+    List<SendLog> selectByDay();
+
+    List<SendLog> selectByHour();
 }

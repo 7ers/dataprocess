@@ -61,6 +61,8 @@ mybatis:
 #  url: http://www.798joy.com:1080/recv
 #  group_count: 10000
 #  encoding: utf-8
+#  timeout: 3000000
+#  key: 3fa6f09b
 #
 #saving:
 #  src_path: /Users/lahm/Desktop/data/
@@ -68,8 +70,7 @@ mybatis:
 
 #server
 sending:
-#  url: http://47.103.84.246/api/mc
-  url: http://www.798joy.com:1080/recv
+  url: http://47.103.84.246/api/mc
   group_count: 10000
   encoding: utf-8
   timeout: 3000000

@@ -54,8 +54,8 @@ public class Processor {
 
     @Scheduled(fixedDelay=10000)
     private void process() {
-        int sCount = 0, fCount = 0;
         long startTime = System.currentTimeMillis();
+        int sCount = 0, fCount = 0;
 
         File folder = new File(src_path);
         if (!folder.exists()) {
@@ -76,6 +76,9 @@ public class Processor {
             String filename = fileList.get(fileList.size()-1).toString();
             BufferedRandomAccessFile reader = null;
             try {
+                if (sendLogService.isDuplicate(filename))
+                    return;
+
                 reader = new BufferedRandomAccessFile(src_path + filename, "r");
                 reader.seek(0);
 
@@ -127,7 +130,7 @@ public class Processor {
                 }
 
                 if(sCount > 0 || fCount > 0)
-                    sendLogService.record(sCount, fCount);
+                    sendLogService.record(sCount, fCount, filename);
             }
         }
     }
