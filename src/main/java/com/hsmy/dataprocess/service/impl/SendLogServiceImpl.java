@@ -6,6 +6,7 @@ import com.hsmy.dataprocess.service.SendLogService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 @Service
 public class SendLogServiceImpl implements SendLogService {
@@ -18,5 +19,10 @@ public class SendLogServiceImpl implements SendLogService {
         sendLog.setScount(sCount);
         sendLog.setFcount(fCount);
         sendLogMapper.insertSelective(sendLog);
+    }
+
+    @Override
+    public List<SendLog> selectAll() {
+        return sendLogMapper.selectAll();
     }
 }

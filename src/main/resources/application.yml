@@ -56,14 +56,28 @@ mybatis:
   mapper-locations: classpath:mapper/*Mapper.xml
   type-aliases-package: com.hsmy.dataprocess.pojo
 
+#native
+#sending:
+#  url: http://www.798joy.com:1080/recv
+#  group_count: 10000
+#  encoding: utf-8
+#
+#saving:
+#  src_path: /Users/lahm/Desktop/data/
+#  his_path: /Users/lahm/Desktop/history/
+
+#server
 sending:
+#  url: http://47.103.84.246/api/mc
   url: http://www.798joy.com:1080/recv
   group_count: 10000
   encoding: utf-8
+  timeout: 3000000
+  key: 3fa6f09b
 
 saving:
-  src_path: /Users/lahm/Desktop/data/
-  his_path: /Users/lahm/Desktop/history/
+  src_path: /data/backup/httpd/
+  his_path: /data/backup/history/
 
 #配置日志信息
   logging:

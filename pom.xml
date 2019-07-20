@@ -12,6 +12,7 @@
     <artifactId>dataprocess</artifactId>
     <version>1.0</version>
     <name>dataprocess</name>
+    <packaging>jar</packaging>
     <description>project for process data</description>
 
     <properties>

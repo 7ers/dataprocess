@@ -79,4 +79,7 @@
       SENDTIME = #{sendtime,jdbcType=TIMESTAMP}
     where ID = #{id,jdbcType=INTEGER}
   </update>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select DATE_FORMAT(SENDTIME,'%Y%m%d') sdate,sum(scount) scount,sum(fcount) fcount from T_SEND_LOG group by sdate order by sdate desc
+  </select>
 </mapper>

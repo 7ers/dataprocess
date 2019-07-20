@@ -34,6 +34,10 @@ public class Processor {
     private int group_count;
     @Value("${sending.encoding}")
     private String encoding;
+    @Value("${sending.timeout}")
+    private int timeout;
+    @Value("${sending.key}")
+    private String key;
 
     @Value("${saving.src_path}")
     private String src_path;
@@ -41,9 +45,6 @@ public class Processor {
     private String his_path;
 
     private final String FORMAT = "{\"ip\":\"%s\",\"ua\":\"%s\"},";
-    private final String KEY = "3fa6f09b";
-
-    private final int TIMEOUT = 3300 * 1000;
 
     @Resource
     TransferDataService transferDataService;
@@ -51,7 +52,7 @@ public class Processor {
     @Resource
     SendLogService sendLogService;
 
-    @Scheduled(fixedDelay=1000000)
+    @Scheduled(fixedDelay=10000)
     private void process() {
         int sCount = 0, fCount = 0;
         long startTime = System.currentTimeMillis();
@@ -77,10 +78,12 @@ public class Processor {
             try {
                 reader = new BufferedRandomAccessFile(src_path + filename, "r");
                 reader.seek(0);
+
                 int count = 0;
                 boolean didReadEOF = false;
                 StringBuilder records = new StringBuilder();
                 records.append("[");
+
                 while (true) {
                     String line = reader.readLine();
                     if (StringUtils.isEmpty(line)) {
@@ -95,7 +98,7 @@ public class Processor {
                     if(count == group_count || (didReadEOF && records.length() > 0)){
                         records.deleteCharAt(records.length() - 1);
                         records.append("]");
-                        String sendContent = DesECBUti.encryptDES(records.toString(), KEY);
+                        String sendContent = DesECBUti.encryptDES(records.toString(), key);
 
                         int ret = transferDataService.sendPostDataByJson(url, sendContent,encoding);
                         if (ret == HttpStatus.SC_OK) {
@@ -109,7 +112,7 @@ public class Processor {
                         records.append("[");
                     }
 
-                    if (didReadEOF || System.currentTimeMillis() - startTime >= TIMEOUT) {
+                    if (didReadEOF || System.currentTimeMillis() - startTime >= timeout) {
                         break;
                     }
                 }
@@ -123,7 +126,8 @@ public class Processor {
                     logger.error("backup failed.");
                 }
 
-                sendLogService.record(sCount, fCount);
+                if(sCount > 0 || fCount > 0)
+                    sendLogService.record(sCount, fCount);
             }
         }
     }

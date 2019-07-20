@@ -1,5 +1,8 @@
 package com.hsmy.dataprocess.pojo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.util.Date;
 
 public class SendLog {
@@ -10,6 +13,10 @@ public class SendLog {
     private Integer fcount;
 
     private Date sendtime;
+
+    @DateTimeFormat(pattern = "yyyy")
+    @JsonFormat(pattern = "yyyy")
+    private Date sdate;
 
     public Integer getId() {
         return id;
@@ -41,5 +48,13 @@ public class SendLog {
 
     public void setSendtime(Date sendtime) {
         this.sendtime = sendtime;
+    }
+
+    public Date getSdate() {
+        return sdate;
+    }
+
+    public void setSdate(Date sdate) {
+        this.sdate = sdate;
     }
 }
