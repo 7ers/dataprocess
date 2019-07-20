@@ -6,6 +6,9 @@ import com.hsmy.dataprocess.tools.BufferedRandomAccessFile;
 import com.hsmy.dataprocess.tools.DesECBUti;
 import org.apache.http.HttpStatus;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -23,15 +26,23 @@ import java.util.List;
 @Configuration
 @EnableScheduling
 public class Processor {
-    private final String URL = "http://www.798joy.com:1080/recv";
+    private static final Logger logger = LoggerFactory.getLogger(Processor.class);
 
-    private final String FOLDER_PATH = "/Users/lahm/Desktop/data/";
-    private final String HISTORY_PATH = "/Users/lahm/Desktop/history/";
+    @Value("${sending.url}")
+    private String url;
+    @Value("${sending.group_count}")
+    private int group_count;
+    @Value("${sending.encoding}")
+    private String encoding;
+
+    @Value("${saving.src_path}")
+    private String src_path;
+    @Value("${saving.his_path}")
+    private String his_path;
 
     private final String FORMAT = "{\"ip\":\"%s\",\"ua\":\"%s\"},";
     private final String KEY = "3fa6f09b";
 
-    private final int GROUP_COUNT = 10000;
     private final int TIMEOUT = 3300 * 1000;
 
     @Resource
@@ -45,7 +56,7 @@ public class Processor {
         int sCount = 0, fCount = 0;
         long startTime = System.currentTimeMillis();
 
-        File folder = new File(FOLDER_PATH);
+        File folder = new File(src_path);
         if (!folder.exists()) {
             folder.mkdirs();
         } else {
@@ -64,7 +75,7 @@ public class Processor {
             String filename = fileList.get(fileList.size()-1).toString();
             BufferedRandomAccessFile reader = null;
             try {
-                reader = new BufferedRandomAccessFile(FOLDER_PATH + filename, "r");
+                reader = new BufferedRandomAccessFile(src_path + filename, "r");
                 reader.seek(0);
                 int count = 0;
                 boolean didReadEOF = false;
@@ -81,12 +92,12 @@ public class Processor {
                         ++count;
                     }
 
-                    if(count == GROUP_COUNT || (didReadEOF && records.length() > 0)){
+                    if(count == group_count || (didReadEOF && records.length() > 0)){
                         records.deleteCharAt(records.length() - 1);
                         records.append("]");
                         String sendContent = DesECBUti.encryptDES(records.toString(), KEY);
 
-                        int ret = transferDataService.sendPostDataByJson(URL, sendContent,"utf-8");
+                        int ret = transferDataService.sendPostDataByJson(url, sendContent,encoding);
                         if (ret == HttpStatus.SC_OK) {
                             sCount += count;
                         } else {
@@ -103,12 +114,14 @@ public class Processor {
                     }
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error(e.getMessage());
             } finally {
                 IOUtils.closeQuietly(reader);
 
-                File currentFile = new File(FOLDER_PATH + filename);
-                currentFile.renameTo(new File(HISTORY_PATH + filename));
+                File currentFile = new File(src_path + filename);
+                if(!currentFile.renameTo(new File(his_path + filename))){
+                    logger.error("backup failed.");
+                }
 
                 sendLogService.record(sCount, fCount);
             }
