@@ -81,9 +81,9 @@ saving:
   his_path: /data/backup/history/
 
 #配置日志信息
-  logging:
-    config: classpath:logback.xml
-    path: /home/log/9080
+logging:
+  config: classpath:logback-spring.xml
+  path: /log/
   # path: /Users/eipwork/Documents
-    level:
-      root: error
+  level:
+    root: error

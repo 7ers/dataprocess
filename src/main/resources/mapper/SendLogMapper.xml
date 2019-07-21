@@ -66,7 +66,7 @@
     select DATE_FORMAT(SENDTIME,'%Y%m%d') sdate,sum(scount) scount,sum(fcount) fcount from T_SEND_LOG group by sdate order by sdate desc
   </select>
   <select id="selectByHour" resultMap="BaseResultMap">
-    select * from T_SEND_LOG order by SENDTIME
+    select * from T_SEND_LOG order by SENDTIME desc
   </select>
   <select id="countByFileName" parameterType="java.lang.String" resultType="java.lang.Integer">
     select count(1) from T_SEND_LOG where FILENAME = #{filename,jdbcType=VARCHAR}

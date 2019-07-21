@@ -75,6 +75,9 @@ public class Processor {
             });
 
             String filename = fileList.get(fileList.size()-1).toString();
+            if (filename.charAt(0) == '.')
+                return;
+
             BufferedRandomAccessFile reader = null;
             try {
                 if (sendLogService.isDuplicate(filename))
@@ -131,8 +134,7 @@ public class Processor {
                     logger.error("backup failed.");
                 }
 
-                if(sCount > 0 || fCount > 0)
-                    sendLogService.record(sCount, fCount, filename, (int)reader.getFilePointer(), totalbyte);
+                sendLogService.record(sCount, fCount, filename, (int)reader.getFilePointer(), totalbyte);
             }
         }
     }
