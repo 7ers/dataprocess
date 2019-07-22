@@ -9,7 +9,11 @@ public interface SendLogService {
 
     boolean isDuplicate(String filename);
 
-    List<SendLog> selectByDay();
+    int countPagesByHour();
 
-    List<SendLog> selectByHour();
+    List<SendLog> selectPageByHour(int page);
+
+    int countPagesByDay();
+
+    List<SendLog> selectPageByDay(int page);
 }

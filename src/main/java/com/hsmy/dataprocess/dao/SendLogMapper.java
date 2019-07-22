@@ -9,9 +9,13 @@ import java.util.List;
 public interface SendLogMapper {
     int insertSelective(SendLog record);
 
-    List<SendLog> selectByDay();
-
-    List<SendLog> selectByHour();
-
     int countByFileName(String filename);
+
+    int countPagesByHour();
+
+    List<SendLog> selectPageByHour(int page);
+
+    int countPagesByDay();
+
+    List<SendLog> selectPageByDay(int page);
 }

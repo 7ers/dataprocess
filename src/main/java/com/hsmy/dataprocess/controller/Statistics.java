@@ -13,20 +13,30 @@ public class Statistics {
     @Resource
     SendLogService sendLogService;
 
-    @GetMapping("/querybyday")
-    public Object querybyday() {
+    @GetMapping("/querybyhour")
+    public Object querybyhour(int page) {
         Map<String, Object> result = new HashMap<>();
+
+        Map<String ,Object> dataMap = new HashMap<>();
+        dataMap.put("logs", sendLogService.selectPageByHour(page));
+        dataMap.put("pages", sendLogService.countPagesByHour());
+
         result.put("code", "0");
-        result.put("data", sendLogService.selectByDay());
+        result.put("data", dataMap);
 
         return result;
     }
 
-    @GetMapping("/querybyhour")
-    public Object querybyhour() {
+    @GetMapping("/querybyday")
+    public Object querybyday(int page) {
         Map<String, Object> result = new HashMap<>();
+
+        Map<String ,Object> dataMap = new HashMap<>();
+        dataMap.put("logs", sendLogService.selectPageByDay(page));
+        dataMap.put("pages", sendLogService.countPagesByDay());
+
         result.put("code", "0");
-        result.put("data", sendLogService.selectByHour());
+        result.put("data", dataMap);
 
         return result;
     }

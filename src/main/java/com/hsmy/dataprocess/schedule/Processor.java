@@ -59,9 +59,7 @@ public class Processor {
         int totalbyte = 0;
 
         File folder = new File(src_path);
-        if (!folder.exists()) {
-            folder.mkdirs();
-        } else {
+        if (folder.exists()) {
             String[] fileArray = folder.list();
             if (fileArray == null || fileArray.length == 0)
                 return;
@@ -127,14 +125,19 @@ public class Processor {
             } catch (Exception e) {
                 logger.error(e.getMessage());
             } finally {
+                sendLogService.record(sCount, fCount, filename, (int)reader.getFilePointer(), totalbyte);
+
                 IOUtils.closeQuietly(reader);
 
+                String hisFolderPath = his_path + filename.substring(0, 8) + "/";
+                File hisFoler = new File(hisFolderPath);
+                if (!hisFoler.exists()) {
+                    hisFoler.mkdirs();
+                }
                 File currentFile = new File(src_path + filename);
-                if(!currentFile.renameTo(new File(his_path + filename))){
+                if(!currentFile.renameTo(new File(hisFolderPath + filename))){
                     logger.error("backup failed.");
                 }
-
-                sendLogService.record(sCount, fCount, filename, (int)reader.getFilePointer(), totalbyte);
             }
         }
     }

@@ -30,12 +30,22 @@ public class SendLogServiceImpl implements SendLogService {
     }
 
     @Override
-    public List<SendLog> selectByDay() {
-        return sendLogMapper.selectByDay();
+    public int countPagesByHour() {
+        return sendLogMapper.countPagesByHour();
     }
 
     @Override
-    public List<SendLog> selectByHour() {
-        return sendLogMapper.selectByHour();
+    public List<SendLog> selectPageByHour(int page) {
+        return sendLogMapper.selectPageByHour(page);
+    }
+
+    @Override
+    public int countPagesByDay() {
+        return sendLogMapper.countPagesByDay();
+    }
+
+    @Override
+    public List<SendLog> selectPageByDay(int page) {
+        return sendLogMapper.selectPageByDay(page);
     }
 }
