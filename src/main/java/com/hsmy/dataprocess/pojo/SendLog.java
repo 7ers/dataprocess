@@ -18,8 +18,8 @@ public class SendLog {
 
     private Integer totalbyte;
 
-    @DateTimeFormat(pattern = "yyy-MM-dd HH:mm:ss")
-    @JsonFormat(pattern = "yyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "HH:mm:ss yyyy-MM-dd")
+    @JsonFormat(pattern = "HH:mm:ss yyyy-MM-dd")
     private Date sendtime;
 
     @DateTimeFormat(pattern = "yyyy")
