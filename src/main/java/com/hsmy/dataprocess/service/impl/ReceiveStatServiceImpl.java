@@ -2,16 +2,21 @@ package com.hsmy.dataprocess.service.impl;
 
 import com.hsmy.dataprocess.dao.ReceiveStatMapper;
 import com.hsmy.dataprocess.pojo.ReceiveStat;
-import com.hsmy.dataprocess.service.RecevieStatService;
+import com.hsmy.dataprocess.service.ReceiveStatService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
 
 @Service
-public class ReceiveStatImpl implements RecevieStatService {
+public class ReceiveStatServiceImpl implements ReceiveStatService {
     @Resource
     ReceiveStatMapper receiveStatMapper;
+
+    @Override
+    public void record(ReceiveStat receiveStat) {
+        receiveStatMapper.insertSelective(receiveStat);
+    }
 
     @Override
     public int countPagesByDay() {

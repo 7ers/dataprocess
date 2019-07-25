@@ -1,6 +1,8 @@
 package com.hsmy.dataprocess.schedule;
 
+import com.hsmy.dataprocess.pojo.ReceiveStat;
 import com.hsmy.dataprocess.pojo.SendLog;
+import com.hsmy.dataprocess.service.ReceiveStatService;
 import com.hsmy.dataprocess.service.SendLogService;
 import com.hsmy.dataprocess.service.TransferDataService;
 import com.hsmy.dataprocess.tools.BufferedRandomAccessFile;
@@ -52,6 +54,9 @@ public class Processor {
     @Resource
     SendLogService sendLogService;
 
+    @Resource
+    ReceiveStatService receiveStatService;
+
     @Scheduled(fixedDelay=10000)
     private void process() {
         long startTime = System.currentTimeMillis();
@@ -76,6 +81,9 @@ public class Processor {
             String filename = fileList.get(fileList.size()-1).toString();
             if (filename.charAt(0) == '.')
                 return;
+
+//            if (new File(src_path + filename).isDirectory())
+//                return;
 
             BufferedRandomAccessFile reader = null;
             try {
@@ -136,7 +144,7 @@ public class Processor {
                 sendLog.setTotalbyte(totalbyte);
                 sendLog.setVcount(vcount);
                 sendLog.setIvcount(ivcount);
-                sendLog.setStarttime(new Date(new Timestamp(startTime + 8 * 3600 * 1000).getTime()));
+                sendLog.setStarttime(new Date(new Timestamp(startTime).getTime()));
                 sendLogService.record(sendLog);
 
                 IOUtils.closeQuietly(reader);
@@ -152,5 +160,66 @@ public class Processor {
                 }
             }
         }
+    }
+
+
+    @Scheduled(cron = "0 35 5 * * ?")
+    private void statistics() {
+        long startTime = System.currentTimeMillis();
+
+        long count = 0;
+        byte[][][][] ips = new byte[256][256][256][256];
+
+        Date date = new Date();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.DATE, -1);
+
+        String folderPath = his_path + new SimpleDateFormat("yyyyMMdd").format(calendar.getTime()) + "/";
+        File folder = new File(folderPath);
+        String[] fileArray = folder.list();
+        if (fileArray == null || fileArray.length == 0)
+            return;
+
+        for (int i = 0; i < fileArray.length; i++) {
+            String filename = fileArray[i];
+            BufferedRandomAccessFile reader = null;
+            try {
+                reader = new BufferedRandomAccessFile(folderPath + filename, "r");
+                reader.seek(0);
+
+                while (true) {
+                    String line = reader.readLine();
+                    if (StringUtils.isEmpty(line)) {
+                        break;
+                    } else {
+                        String[] record = line.split("\\|");
+                        if (!StringUtils.isValidRecord(record)) {
+                            continue;
+                        }
+
+                        String[] ip = record[0].split("\\.");
+                        int a = Integer.parseInt(ip[0]);
+                        int b = Integer.parseInt(ip[1]);
+                        int c = Integer.parseInt(ip[2]);
+                        int d = Integer.parseInt(ip[3]);
+                        if (ips[a][b][c][d] == 0) {
+                            ips[a][b][c][d] = 1;
+                            ++count;
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                logger.error(e.getMessage());
+            } finally {
+                IOUtils.closeQuietly(reader);
+            }
+        }
+
+        ReceiveStat receiveStat = new ReceiveStat();
+        receiveStat.setStatCount(count);
+        receiveStat.setDuration(System.currentTimeMillis() - startTime);
+        receiveStat.setStatDate(calendar.getTime());
+        receiveStatService.record(receiveStat);
     }
 }

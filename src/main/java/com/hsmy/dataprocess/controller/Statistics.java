@@ -1,6 +1,6 @@
 package com.hsmy.dataprocess.controller;
 
-import com.hsmy.dataprocess.service.RecevieStatService;
+import com.hsmy.dataprocess.service.ReceiveStatService;
 import com.hsmy.dataprocess.service.SendLogService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,7 +15,7 @@ public class Statistics {
     SendLogService sendLogService;
 
     @Resource
-    RecevieStatService recevieStatService;
+    ReceiveStatService receiveStatService;
 
     @GetMapping("/querybyhour")
     public Object querybyhour(int page) {
@@ -50,8 +50,8 @@ public class Statistics {
         Map<String, Object> result = new HashMap<>();
 
         Map<String ,Object> dataMap = new HashMap<>();
-        dataMap.put("stats", recevieStatService.selectPageByDay(page));
-        dataMap.put("pages", recevieStatService.countPagesByDay());
+        dataMap.put("stats", receiveStatService.selectPageByDay(page));
+        dataMap.put("pages", receiveStatService.countPagesByDay());
 
         result.put("code", "0");
         result.put("data", dataMap);

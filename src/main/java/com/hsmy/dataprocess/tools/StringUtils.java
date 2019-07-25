@@ -12,6 +12,9 @@ public class StringUtils {
     public static boolean isValidRecord(String[] record) {
         if (record.length < 3)
             return false;
+
+        if (record[0].contains(","))
+            return false;
         
 //        String regex = "^(1\\d{2}|2[0-4]\\d|25[0-5]|[1-9]\\d|[1-9])\\."
 //                +"(1\\d{2}|2[0-4]\\d|25[0-5]|[1-9]\\d|\\d)\\."

@@ -7,6 +7,8 @@ import java.util.List;
 
 @Mapper
 public interface ReceiveStatMapper {
+    int insertSelective(ReceiveStat receiveStat);
+
     int countPagesByDay();
 
     List<ReceiveStat> selectPageByDay(int page);
