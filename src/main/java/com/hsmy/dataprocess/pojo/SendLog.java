@@ -18,6 +18,12 @@ public class SendLog {
 
     private Integer totalbyte;
 
+    private Integer vcount;
+
+    private Integer ivcount;
+
+    private Date starttime;
+
     @DateTimeFormat(pattern = "HH:mm:ss yyyy-MM-dd")
     @JsonFormat(pattern = "HH:mm:ss yyyy-MM-dd")
     private Date sendtime;
@@ -25,6 +31,7 @@ public class SendLog {
     @DateTimeFormat(pattern = "yyyy")
     @JsonFormat(pattern = "yyyy")
     private Date sdate;
+
 
     public Integer getId() {
         return id;
@@ -72,6 +79,30 @@ public class SendLog {
 
     public void setTotalbyte(Integer totalbyte) {
         this.totalbyte = totalbyte;
+    }
+
+    public Integer getVcount() {
+        return vcount;
+    }
+
+    public void setVcount(Integer vcount) {
+        this.vcount = vcount;
+    }
+
+    public Integer getIvcount() {
+        return ivcount;
+    }
+
+    public void setIvcount(Integer ivcount) {
+        this.ivcount = ivcount;
+    }
+
+    public Date getStarttime() {
+        return starttime;
+    }
+
+    public void setStarttime(Date starttime) {
+        this.starttime = starttime;
     }
 
     public Date getSendtime() {

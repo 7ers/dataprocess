@@ -14,13 +14,7 @@ public class SendLogServiceImpl implements SendLogService {
     private SendLogMapper sendLogMapper;
 
     @Override
-    public void record(int sCount, int fCount, String filename, int readbyte, int totalbyte) {
-        SendLog sendLog = new SendLog();
-        sendLog.setScount(sCount);
-        sendLog.setFcount(fCount);
-        sendLog.setFilename(filename);
-        sendLog.setReadbyte(readbyte);
-        sendLog.setTotalbyte(totalbyte);
+    public void record(SendLog sendLog) {
         sendLogMapper.insertSelective(sendLog);
     }
 

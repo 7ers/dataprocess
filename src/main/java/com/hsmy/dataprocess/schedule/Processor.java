@@ -1,9 +1,11 @@
 package com.hsmy.dataprocess.schedule;
 
+import com.hsmy.dataprocess.pojo.SendLog;
 import com.hsmy.dataprocess.service.SendLogService;
 import com.hsmy.dataprocess.service.TransferDataService;
 import com.hsmy.dataprocess.tools.BufferedRandomAccessFile;
 import com.hsmy.dataprocess.tools.DesECBUti;
+import com.hsmy.dataprocess.tools.StringUtils;
 import org.apache.http.HttpStatus;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.slf4j.Logger;
@@ -13,14 +15,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.io.File;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Component
 @Configuration
@@ -55,7 +55,8 @@ public class Processor {
     @Scheduled(fixedDelay=10000)
     private void process() {
         long startTime = System.currentTimeMillis();
-        int sCount = 0, fCount = 0;
+
+        int sCount = 0, fCount = 0, vcount = 0, ivcount = 0;
         int totalbyte = 0;
 
         File folder = new File(src_path);
@@ -78,9 +79,6 @@ public class Processor {
 
             BufferedRandomAccessFile reader = null;
             try {
-                if (sendLogService.isDuplicate(filename))
-                    return;
-
                 reader = new BufferedRandomAccessFile(src_path + filename, "r");
                 reader.seek(0);
                 totalbyte = (int)reader.length();
@@ -96,9 +94,14 @@ public class Processor {
                         didReadEOF = true;
                     } else {
                         String[] record = line.split("\\|");
-                        records.append(String.format(FORMAT, record[0], record[2]));
+                        if (!StringUtils.isValidRecord(record)) {
+                            ++ivcount;
+                            continue;
+                        }
 
+                        records.append(String.format(FORMAT, record[0], record[2]));
                         ++count;
+                        ++vcount;
                     }
 
                     if(count == group_count || (didReadEOF && records.length() > 0)){
@@ -125,7 +128,16 @@ public class Processor {
             } catch (Exception e) {
                 logger.error(e.getMessage());
             } finally {
-                sendLogService.record(sCount, fCount, filename, (int)reader.getFilePointer(), totalbyte);
+                SendLog sendLog = new SendLog();
+                sendLog.setScount(sCount);
+                sendLog.setFcount(fCount);
+                sendLog.setFilename(filename);
+                sendLog.setReadbyte((int)reader.getFilePointer());
+                sendLog.setTotalbyte(totalbyte);
+                sendLog.setVcount(vcount);
+                sendLog.setIvcount(ivcount);
+                sendLog.setStarttime(new Date(new Timestamp(startTime + 8 * 3600 * 1000).getTime()));
+                sendLogService.record(sendLog);
 
                 IOUtils.closeQuietly(reader);
 

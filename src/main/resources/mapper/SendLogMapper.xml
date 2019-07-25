@@ -8,10 +8,13 @@
     <result column="FILENAME" jdbcType="VARCHAR" property="filename" />
     <result column="READBYTE" jdbcType="INTEGER" property="readbyte" />
     <result column="TOTALBYTE" jdbcType="INTEGER" property="totalbyte" />
+    <result column="VCOUNT" jdbcType="INTEGER" property="vcount" />
+    <result column="IVCOUNT" jdbcType="INTEGER" property="ivcount" />
+    <result column="STARTTIME" jdbcType="TIMESTAMP" property="starttime" />
     <result column="SENDTIME" jdbcType="TIMESTAMP" property="sendtime" />
   </resultMap>
   <sql id="Base_Column_List">
-    ID, SCOUNT, FCOUNT, FILENAME, READBYTE, TOTALBYTE, SENDTIME
+    ID, SCOUNT, FCOUNT, FILENAME, READBYTE, TOTALBYTE, VCOUNT, IVCOUNT, STARTTIME, SENDTIME
   </sql>
   <insert id="insertSelective" parameterType="com.hsmy.dataprocess.pojo.SendLog">
     insert into T_SEND_LOG
@@ -33,6 +36,15 @@
       </if>
       <if test="totalbyte != null">
         TOTALBYTE,
+      </if>
+      <if test="vcount != null">
+        VCOUNT,
+      </if>
+      <if test="ivcount != null">
+        IVCOUNT,
+      </if>
+      <if test="starttime != null">
+        STARTTIME,
       </if>
       <if test="sendtime != null">
         SENDTIME,
@@ -57,6 +69,15 @@
       <if test="totalbyte != null">
         #{totalbyte,jdbcType=INTEGER},
       </if>
+      <if test="vcount != null">
+        #{vcount,jdbcType=INTEGER},
+      </if>
+      <if test="ivcount != null">
+        #{ivcount,jdbcType=INTEGER},
+      </if>
+      <if test="starttime != null">
+        #{starttime,jdbcType=TIMESTAMP},
+      </if>
       <if test="sendtime != null">
         #{sendtime,jdbcType=TIMESTAMP},
       </if>
@@ -66,15 +87,15 @@
     select count(1) from T_SEND_LOG where FILENAME = #{filename,jdbcType=VARCHAR}
   </select>
   <select id="countPagesByHour" resultType="java.lang.Integer">
-    select count(1) from (select count(1) from T_SEND_LOG group by DATE_FORMAT(SENDTIME,'%Y%m%d')) alias;
+    select count(1) from (select count(1) from T_SEND_LOG group by DATE_FORMAT(SENDTIME,'%Y%m%d')) alias
   </select>
   <select id="selectPageByHour" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select * from T_SEND_LOG where DATE_FORMAT(SENDTIME,'%Y%m%d')=DATE_FORMAT(date_sub(curdate(),interval #{page} day),'%Y%m%d') order by SENDTIME asc;
+    select * from T_SEND_LOG where DATE_FORMAT(SENDTIME,'%Y%m%d')=DATE_FORMAT(date_sub(curdate(),interval #{page} day),'%Y%m%d') order by SENDTIME asc
   </select>
   <select id="countPagesByDay" resultType="java.lang.Integer">
-    select count(1) from (select count(1) from T_SEND_LOG group by DATE_FORMAT(SENDTIME,'%Y%m')) alias;
+    select count(1) from (select count(1) from T_SEND_LOG group by DATE_FORMAT(SENDTIME,'%Y%m')) alias
   </select>
   <select id="selectPageByDay" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select DATE_FORMAT(SENDTIME,'%Y%m%d') sdate,sum(scount) scount,sum(fcount) fcount from T_SEND_LOG where DATE_FORMAT(SENDTIME,'%Y%m')=DATE_FORMAT(date_sub(curdate(),interval #{page} month),'%Y%m') group by sdate order by sdate asc;
+    select DATE_FORMAT(SENDTIME,'%Y%m%d') sdate,sum(scount) scount,sum(fcount) fcount from T_SEND_LOG where DATE_FORMAT(SENDTIME,'%Y%m')=DATE_FORMAT(date_sub(curdate(),interval #{page} month),'%Y%m') group by sdate order by sdate asc
   </select>
 </mapper>

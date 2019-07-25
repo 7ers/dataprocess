@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hsmy.dataprocess.dao.ReceiveStatMapper" >
+  <resultMap id="BaseResultMap" type="com.hsmy.dataprocess.pojo.ReceiveStat" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="STAT_DATE" property="statDate" jdbcType="DATE" />
+    <result column="STAT_COUNT" property="statCount" jdbcType="BIGINT" />
+    <result column="createtime" property="createtime" jdbcType="TIMESTAMP" />
+    <result column="duration" property="duration" jdbcType="BIGINT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, STAT_DATE, STAT_COUNT, createtime, duration
+  </sql>
+  <select id="countPagesByDay" resultType="java.lang.Integer">
+    select count(1) from (select count(1) from T_RECEIVE_STAT group by DATE_FORMAT(STAT_DATE,'%Y%m')) alias
+  </select>
+  <select id="selectPageByDay" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select * from T_RECEIVE_STAT where DATE_FORMAT(STAT_DATE,'%Y%m')=DATE_FORMAT(date_sub(curdate(),interval #{page} month),'%Y%m') order by STAT_DATE asc
+  </select>
+</mapper>
