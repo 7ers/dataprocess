@@ -14,6 +14,8 @@ public class ReceiveStat {
 
     private Long statCount;
 
+    private Long idfaCount;
+
     private Date createtime;
 
     private Long duration;
@@ -56,5 +58,13 @@ public class ReceiveStat {
 
     public void setDuration(Long duration) {
         this.duration = duration;
+    }
+
+    public Long getIdfaCount() {
+        return idfaCount;
+    }
+
+    public void setIdfaCount(Long idfaCount) {
+        this.idfaCount = idfaCount;
     }
 }

@@ -1,6 +1,8 @@
 server:
   port: 18080
 spring:
+  jackson:
+    time-zone: GMT+8
   datasource:
     druid:
       db-type: mysql

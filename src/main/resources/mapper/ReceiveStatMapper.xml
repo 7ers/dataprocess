@@ -5,53 +5,20 @@
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="STAT_DATE" jdbcType="DATE" property="statDate" />
     <result column="STAT_COUNT" jdbcType="BIGINT" property="statCount" />
+    <result column="IDFA_COUNT" jdbcType="BIGINT" property="idfaCount" />
     <result column="createtime" jdbcType="TIMESTAMP" property="createtime" />
     <result column="duration" jdbcType="BIGINT" property="duration" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, STAT_DATE, STAT_COUNT, createtime, duration
+    id, STAT_DATE, STAT_COUNT, createtime, duration, IDFA_COUNT
   </sql>
-  <insert id="insertSelective" parameterType="com.hsmy.dataprocess.pojo.ReceiveStat">
-    insert into T_RECEIVE_STAT
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        id,
-      </if>
-      <if test="statDate != null">
-        STAT_DATE,
-      </if>
-      <if test="statCount != null">
-        STAT_COUNT,
-      </if>
-      <if test="createtime != null">
-        createtime,
-      </if>
-      <if test="duration != null">
-        duration,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        #{id,jdbcType=INTEGER},
-      </if>
-      <if test="statDate != null">
-        #{statDate,jdbcType=DATE},
-      </if>
-      <if test="statCount != null">
-        #{statCount,jdbcType=BIGINT},
-      </if>
-      <if test="createtime != null">
-        #{createtime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="duration != null">
-        #{duration,jdbcType=BIGINT},
-      </if>
-    </trim>
-  </insert>
   <select id="countPagesByDay" resultType="java.lang.Integer">
     select count(1) from (select count(1) from T_RECEIVE_STAT group by DATE_FORMAT(STAT_DATE,'%Y%m')) alias
   </select>
   <select id="selectPageByDay" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select * from T_RECEIVE_STAT where DATE_FORMAT(STAT_DATE,'%Y%m')=DATE_FORMAT(date_sub(curdate(),interval #{page} month),'%Y%m') order by STAT_DATE asc
+  </select>
+  <select id="selectByWeek" resultMap="BaseResultMap">
+    select * from T_RECEIVE_STAT order by STAT_DATE desc limit 7
   </select>
 </mapper>

@@ -42,4 +42,9 @@ public class SendLogServiceImpl implements SendLogService {
     public List<SendLog> selectPageByDay(int page) {
         return sendLogMapper.selectPageByDay(page);
     }
+
+    @Override
+    public List<SendLog> selectByWeek() {
+        return sendLogMapper.selectByWeek();
+    }
 }

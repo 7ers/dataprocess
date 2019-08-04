@@ -16,4 +16,6 @@ public interface SendLogService {
     int countPagesByDay();
 
     List<SendLog> selectPageByDay(int page);
+
+    List<SendLog> selectByWeek();
 }

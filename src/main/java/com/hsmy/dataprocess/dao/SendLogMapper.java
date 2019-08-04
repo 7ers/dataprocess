@@ -18,4 +18,6 @@ public interface SendLogMapper {
     int countPagesByDay();
 
     List<SendLog> selectPageByDay(int page);
+
+    List<SendLog> selectByWeek();
 }

@@ -98,4 +98,7 @@
   <select id="selectPageByDay" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select DATE_FORMAT(SENDTIME,'%Y%m%d') sdate,sum(scount) scount,sum(fcount) fcount from T_SEND_LOG where DATE_FORMAT(SENDTIME,'%Y%m')=DATE_FORMAT(date_sub(curdate(),interval #{page} month),'%Y%m') group by sdate order by sdate asc
   </select>
+  <select id="selectByWeek" resultMap="BaseResultMap">
+    select DATE_FORMAT(SENDTIME,'%Y%m%d') sdate,sum(scount) scount,sum(fcount) fcount from T_SEND_LOG group by sdate order by sdate desc limit 1, 8
+  </select>
 </mapper>

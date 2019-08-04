@@ -14,11 +14,6 @@ public class ReceiveStatServiceImpl implements ReceiveStatService {
     ReceiveStatMapper receiveStatMapper;
 
     @Override
-    public void record(ReceiveStat receiveStat) {
-        receiveStatMapper.insertSelective(receiveStat);
-    }
-
-    @Override
     public int countPagesByDay() {
         return receiveStatMapper.countPagesByDay();
     }
@@ -26,5 +21,10 @@ public class ReceiveStatServiceImpl implements ReceiveStatService {
     @Override
     public List<ReceiveStat> selectPageByDay(int page) {
         return receiveStatMapper.selectPageByDay(page);
+    }
+
+    @Override
+    public List<ReceiveStat> selectByWeek() {
+        return receiveStatMapper.selectByWeek();
     }
 }
